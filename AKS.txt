@@ -1,0 +1,68 @@
+ludo-betting-game/
+│
+├── server/          (Backend)
+│   ├── server.js    (Main server file)
+│   ├── models/      (Database schemas)
+│   ├── routes/      (API endpoints)
+│   └── package.json (Dependencies)
+│
+├── client/          (Frontend)
+│   ├── index.html   (Main HTML file)
+│   ├── script.js    (Frontend logic)
+│   ├── style.css    (Frontend styling)
+│   └── assets/      (Images, logos, etc.)
+cd server
+npm init -y
+npm install express mongoose socket.io body-parser cors
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const http = require("http");
+const socketIo = require("socket.io");
+
+// App Initialization
+const app = express();
+app.use(bodyParser.json());
+app.use(require("cors")());
+
+// Database Connection
+mongoose.connect("mongodb://localhost:27017/ludo-betting", { useNewUrlParser: true, useUnifiedTopology: true });
+const User = mongoose.model("User", { username: String, password: String, wallet: Number });
+
+// Routes (Register, Login, Wallet APIs)
+app.post("/register", async (req, res) => { /* Registration Logic */ });
+app.post("/login", async (req, res) => { /* Login Logic */ });
+app.post("/add-money", async (req, res) => { /* Add Money Logic */ });
+app.post("/withdraw-money", async (req, res) => { /* Withdraw Money Logic */ });
+
+// Real-Time Gameplay (Socket.io)
+const server = http.createServer(app);
+const io = socketIo(server);
+
+io.on("connection", (socket) => { 
+  console.log("Player connected:", socket.id); 
+  /* Gameplay Logic */
+});
+
+server.listen(3000, () => console.log("Server running on http://localhost:3000"));
+cd server
+node server.js
+const API_BASE = "http://localhost:3000";
+
+function register(username, password) {
+  fetch(`${API_BASE}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  }).then(res => res.json())
+    .then(data => console.log(data));
+}
+
+function login(username, password) {
+  fetch(`${API_BASE}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  }).then(res => res.json())
+    .then(data => console.log(data));
+}
